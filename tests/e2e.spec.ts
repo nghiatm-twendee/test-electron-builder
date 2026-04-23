@@ -1,10 +1,16 @@
-import type {ElectronApplication, JSHandle} from 'playwright';
-import {_electron as electron} from 'playwright';
-import {expect, test as base} from '@playwright/test';
+import type {ElectronApplication, JSHandle} from '@playwright/test';
+import {_electron as electron, expect, test as base} from '@playwright/test';
 import type {BrowserWindow} from 'electron';
 import {globSync} from 'glob';
 import {platform} from 'node:process';
 import {createHash} from 'node:crypto';
+
+// contextBridge exposes preload exports as base64-keyed properties on window
+declare global {
+  interface Window {
+    [key: string]: unknown;
+  }
+}
 
 process.env.PLAYWRIGHT_TEST = 'true';
 
@@ -18,11 +24,12 @@ const test = base.extend<TestFixtures>({
   electronApp: [async ({}, use) => {
 
     /**
-     * Executable path depends on root package name!
+     * Executable path depends on productName in electron-builder.mjs (Txtpad).
+     * Linux uses lowercase, macOS/Windows use the productName casing.
      */
-    let executablePattern = 'dist/*/root{,.*}';
+    let executablePattern = 'dist/*/{Txtpad,txtpad}{,.*}';
     if (platform === 'darwin') {
-      executablePattern += '/Contents/*/root';
+      executablePattern += '/Contents/*/{Txtpad,txtpad}';
     }
 
     const [executablePath] = globSync(executablePattern);
@@ -113,33 +120,33 @@ test.describe('Main window web content', async () => {
 test.describe('Preload context should be exposed', async () => {
   test.describe(`versions should be exposed`, async () => {
     test('with same type`', async ({page}) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa('versions')]);
+      const type = await page.evaluate(() => typeof window[btoa('versions')]);
       expect(type).toEqual('object');
     });
 
     test('with same value', async ({page, electronVersions}) => {
-      const value = await page.evaluate(() => globalThis[btoa('versions')]);
+      const value = await page.evaluate(() => window[btoa('versions')]);
       expect(value).toEqual(electronVersions);
     });
   });
 
   test.describe(`sha256sum should be exposed`, async () => {
     test('with same type`', async ({page}) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa('sha256sum')]);
+      const type = await page.evaluate(() => typeof window[btoa('sha256sum')]);
       expect(type).toEqual('function');
     });
 
     test('with same behavior', async ({page}) => {
       const testString = btoa(`${Date.now() * Math.random()}`);
       const expectedValue = createHash('sha256').update(testString).digest('hex');
-      const value = await page.evaluate((str) => globalThis[btoa('sha256sum')](str), testString);
+      const value = await page.evaluate((str) => (window[btoa('sha256sum')] as (s: string) => string)(str), testString);
       expect(value).toEqual(expectedValue);
     });
   });
 
   test.describe(`send should be exposed`, async () => {
     test('with same type`', async ({page}) => {
-      const type = await page.evaluate(() => typeof globalThis[btoa('send')]);
+      const type = await page.evaluate(() => typeof window[btoa('send')]);
       expect(type).toEqual('function');
     });
 
@@ -150,7 +157,7 @@ test.describe('Preload context should be exposed', async () => {
 
       const testString = btoa(`${Date.now() * Math.random()}`);
       const expectedValue = btoa(testString);
-      const value = await page.evaluate(async (str) => await globalThis[btoa('send')]('test', str), testString);
+      const value = await page.evaluate(async (str) => await (window[btoa('send')] as (channel: string, ...args: unknown[]) => Promise<unknown>)('test', str), testString);
       expect(value).toEqual(expectedValue);
     });
   });
