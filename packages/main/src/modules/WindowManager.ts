@@ -1,6 +1,6 @@
 import type {AppModule} from '../AppModule.js';
 import {ModuleContext} from '../ModuleContext.js';
-import {BrowserWindow} from 'electron';
+import {BrowserWindow, Menu} from 'electron';
 import type {AppInitConfig} from '../AppInitConfig.js';
 
 class WindowManager implements AppModule {
@@ -16,6 +16,7 @@ class WindowManager implements AppModule {
 
   async enable({app}: ModuleContext): Promise<void> {
     await app.whenReady();
+    Menu.setApplicationMenu(null);
     await this.restoreOrCreateWindow(true);
     app.on('second-instance', () => this.restoreOrCreateWindow(true));
     app.on('activate', () => this.restoreOrCreateWindow(true));
