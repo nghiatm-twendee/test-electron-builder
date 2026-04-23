@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "author": "nghiatm-twendee",
+  "author": {
+    "email": "nghiatm@twendeesoft.com",
+    "name": "NghiaTM Twendee"
+  },
   "main": "packages/entry-point.mjs",
   "workspaces": [
     "packages/*"
