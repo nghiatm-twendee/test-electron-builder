@@ -120,6 +120,13 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(
+        in oklch,
+        var(--muted-foreground) 40%,
+        transparent
+      )
+      transparent;
   }
   body {
     @apply bg-background text-foreground;
@@ -127,8 +134,38 @@
   html {
     @apply font-sans;
   }
+
+  /* Scrollbar — WebKit/Blink (Chrome, Edge, Safari) */
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+    border-radius: 9999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+  *::-webkit-scrollbar-button {
+    background: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+    width: 6px;
+    height: 6px;
+  }
+  *::-webkit-scrollbar-button:hover {
+    background: var(--muted-foreground);
+  }
+
+  /* Button cursor */
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+  button:disabled,
+  [role="button"]:disabled {
+    cursor: not-allowed;
   }
 }
