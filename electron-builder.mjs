@@ -11,6 +11,9 @@ export default /** @type import('electron-builder').Configuration */
     buildResources: 'buildResources',
   },
   generateUpdatesFilesForAllChannels: true,
+  mac: {
+    identity: null,
+  },
   linux: {
     target: ['deb'],
   },
