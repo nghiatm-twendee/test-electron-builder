@@ -49,6 +49,7 @@ export async function initApp(initConfig: AppInitConfig) {
                 "https://preactjs.com",
                 "https://www.typescriptlang.org",
                 "https://vuejs.org",
+                "https://github.com",
               ]
             : [],
         ),

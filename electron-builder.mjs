@@ -5,6 +5,7 @@ import {pathToFileURL} from 'node:url';
 
 export default /** @type import('electron-builder').Configuration */
 ({
+  productName: 'Txtpad',
   directories: {
     output: 'dist',
     buildResources: 'buildResources',

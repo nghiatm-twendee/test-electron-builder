@@ -78,7 +78,7 @@ const AppMenubar = () => {
       <ModeToggle />
       <Button variant={"outline"} size={"icon"}>
         <a
-          href="https://github.com/nghiatm-twendee/vite-pwa-txt-editor"
+          href="https://github.com/nghiatm-twendee/test-electron-builder"
           target="_blank"
           rel="noopener noreferrer"
         >
